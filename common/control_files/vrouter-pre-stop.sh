@@ -13,6 +13,6 @@ vhost=$(cat /etc/contrail/agent.conf | \
 mac=$(cat /sys/class/net/$dev/address)
 
 # Set VHOST in cross connect mode
-vif --add $vhost --mac $mac --vrf 0 --type vhost --mode x
 vif --add $dev --mac $mac --vrf 0 --type physical --mode x
+vif --add $vhost --mac $mac --vrf 0 --type vhost --mode x --xconnect $dev
 
