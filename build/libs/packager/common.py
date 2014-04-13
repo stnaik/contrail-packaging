@@ -28,8 +28,7 @@ class BasePackager(Utils):
         self.id                    = kwargs.get('build_id', 999)
         self.sku                   = kwargs.get('sku', 'grizzly')
         self.branch                = kwargs.get('branch', None)
-        store                      = self.expanduser(kwargs['store_dir'])
-        self.store                 = os.path.join(store, str(self.id))
+        self.store                 = self.expanduser(kwargs['store_dir'])
         self.iso_prefix            = kwargs.get('iso_prefix', getpass.getuser())
         self.abs_pkg_dirs          = self.expanduser(kwargs['absolute_package_dir'])
         self.cache_base_dir        = self.expanduser(kwargs['cache_base_dir'])
@@ -46,7 +45,7 @@ class BasePackager(Utils):
         self.cache_subdir          = "".join(platform.dist()[:2]).lower().replace('.', '')
         self.pkg_type              = pkg_types[self.platform]
         self.pkg_repo              = os.path.join(self.store, 'pkg_repo')
-        self.store_log_dir         = os.path.join(self.store, 'log')
+        self.store_log_dir         = os.path.join(self.store, 'package_info')
         self.contrail_pkgs_store   = os.path.join(self.store, 'contrail_packages')
         self.artifacts_dir         = os.path.join(self.git_local_repo, 'build', 'artifacts')
         self.artifacts_extra_dir   = os.path.join(self.git_local_repo, 'build', 'artifacts_extra')
@@ -84,7 +83,7 @@ class BasePackager(Utils):
         self.contrail_pkgs = self.parse_cfg_file(self.contrail_pkg_files, additems)
 
         # create dirs
-        self.create_dir(self.store)
+        self.create_dir(self.store, recreate=False)
         self.create_dir(self.pkg_repo)
         self.create_dir(self.contrail_pkgs_store)
         self.create_dir(self.store_log_dir)
@@ -317,3 +316,13 @@ class BasePackager(Utils):
         cleanerpkg = re.sub(r'-deb$', '-clean', pkginfo['target'])
         self.exec_cmd('make CONTRAIL_SKU=%s TAG=%s %s %s' %(self.sku, self.id, 
                            cleanerpkg, pkginfo['target']), pkginfo['makeloc'])
+        # remove tgz file after successful make
+        log.debug('Removing TGZ File (%s) after Make' % self.contrail_pkgs_tgz)
+        os.unlink(self.contrail_pkgs_tgz)
+
+    def cleanup_store(self):
+        log.debug('Removing packager local repo dir (%s)' % self.pkg_repo)
+        shutil.rmtree(self.pkg_repo)
+        log.debug('Removing packager tgz temp dir (%s)' % self.contrail_pkgs_store)
+        shutil.rmtree(self.contrail_pkgs_store)
+ 

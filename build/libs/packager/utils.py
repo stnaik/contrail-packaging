@@ -37,13 +37,17 @@ class Utils(object):
         return absdirs[0] if len(absdirs) == 1 else absdirs
 
     @staticmethod
-    def create_dir(dirname):
+    def create_dir(dirname, recreate=True):
         dirname = os.path.expanduser(dirname)
         if not os.path.exists(dirname):
             log.debug('Creating directory: %s' %dirname)
             os.makedirs(dirname)
         else:
             log.debug('Dir %s exists' %dirname)
+            if recreate:
+                log.debug('Remove and Recreate existing (%s)' % dirname)
+                shutil.rmtree(dirname)
+                os.makedirs(dirname)
         return dirname
 
     @staticmethod
@@ -54,6 +58,13 @@ class Utils(object):
         for item in copyiter:
             log.debug('Copying ({0}) to dir ({1})'.format(*item))
             shutil.copy(*item)
+
+    def create_symlink(self, sources, destination):
+        '''Create Symlink for each source to given destination'''
+        sources = self.get_as_list(sources)
+        for source in sources:
+            log.debug('Creating Symlink (%s) -> (%s)' % (destination, source))
+            os.symlink(source, destination)
             
     def read_async(self, fd):
         '''read data from a file descriptor, ignoring EAGAIN errors'''
@@ -312,15 +323,13 @@ class Utils(object):
                 log.warn('Dir (%s) do not exists. Skipping...' %dirname)
                 continue
             pkgfiles = self.get_file_list(dirname, pattern, False)
-            for pkgfile in pkgfiles:
-                log.debug('Copying (%s) to (%s)' %(pkgfile, self.artifacts_dir))
-                shutil.copy(pkgfile, self.artifacts_dir)
+            self.copyfiles(pkgfiles, self.artifacts_dir)
 
         # copy iso to artifacts
         if os.path.isfile(self.imgname):
             log.debug('Copying ISO file (%s) to (%s)' %(
                            self.imgname, self.artifacts_dir))
-            shutil.copy(self.imgname, self.artifacts_dir)
+            self.copyfiles(self.imgname, self.artifacts_dir)
         else:
             log.warn('ISO file is not created yet. Skipping...')
 
@@ -330,7 +339,4 @@ class Utils(object):
                 log.warn('Dir (%s) do not exists. Skipping...' %dirname)
                 continue
             pkgfiles = self.get_file_list(dirname, '*.tgz', False)
-            for pkgfile in pkgfiles:
-                log.debug('Copying (%s) to (%s)' %(pkgfile, 
-                           self.artifacts_extra_dir))
-                shutil.copy(pkgfile, self.artifacts_extra_dir)
+            self.copyfiles(pkgfiles, self.artifacts_extra_dir)

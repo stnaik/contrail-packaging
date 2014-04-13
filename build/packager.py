@@ -60,7 +60,6 @@ class PackagerArgParser(Utils):
         cwd = os.getcwd()
         timestamp = time.strftime('%m%d%y%H%M%S')
         logname = 'packager_{id}_%s.log' %timestamp
-        logfile = os.path.join(cwd, 'logs', logname)
         pkg_file_dir = os.path.join(cwd, 'pkg_configs')
         base_pkg_file = 'base_*_pkgs.cfg'
         deps_pkg_file = 'depends_*_pkgs.cfg'
@@ -83,7 +82,7 @@ class PackagerArgParser(Utils):
             'sku'                   : skuname,
             'branch'                : None, 
             'iso_prefix'            : 'contrail',     
-            'store_dir'             : os.path.join(usrhome, 'packager_store'),
+            'store_dir'             : os.path.join(git_local_repo, 'build'),
             'absolute_package_dir'  : None,
             'contrail_package_dir'  : None,
             'base_package_file'     : [os.path.join(pkg_file_dir, dist[0], '{skuname}', base_pkg_file)],
@@ -92,7 +91,7 @@ class PackagerArgParser(Utils):
             'make_targets'          : [],
             'make_targets_file'     : None,
             'loglevel'              : 'DEBUG',
-            'logfile'               : logfile,
+            'logfile'               : os.path.join('{storedir}', 'logs', logname),
             'log_config'            : os.path.join(cwd, 'logger', 'logging.cfg'),
             'git_local_repo'        : git_local_repo,
             'comps_xml_template'    : comps_xml.template,
@@ -129,10 +128,9 @@ class PackagerArgParser(Utils):
         parser.set_defaults(**self.defaults)
         parser.set_defaults(**cfg_file_defaults['config'])
         ns_cliargs = parser.parse_args(self.unparsed_args)
-        # Update store dir
-        ns_cliargs.store_dir = ns_cliargs.store_dir.format(id=ns_cliargs.build_id)
         # Create log file
-        ns_cliargs.logfile = self.defaults['logfile'].format(id=ns_cliargs.build_id)
+        ns_cliargs.logfile = self.defaults['logfile'].format(storedir=ns_cliargs.store_dir,
+                                                             id=ns_cliargs.build_id)
         if not os.path.isdir(os.path.dirname(ns_cliargs.logfile)):
             os.makedirs(os.path.dirname(ns_cliargs.logfile))
         logging.config.fileConfig(self.defaults['log_config'],
@@ -268,12 +266,15 @@ if __name__ == '__main__':
     try:
         packer.ks_build()
     except:
+        log.error('** Packager Failed **')
         raise
+    else:
+        packer.cleanup_store()
     finally:
         log.info('Copying available built ' \
                  'packages to (%s)' %packer.artifacts_dir)
         packer.copy_to_artifacts()
+        duration = datetime.datetime.now() - start
+        log.info('Execution Duration: %s' %str(duration))
 
-    duration = datetime.datetime.now() - start
-    log.info('Execution Duration: %s' %str(duration))
     log.info('Packaging Complete!')
