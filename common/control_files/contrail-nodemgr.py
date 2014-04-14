@@ -428,8 +428,8 @@ def main(argv=sys.argv):
         instance_id = INSTANCE_ID_DEFAULT
         Config = ConfigParser.ConfigParser()
         Config.read("/etc/contrail/api_server.conf")
-        discovery_server = Config.get("DEFAULTS", "disc_server_ip")
-        discovery_port = Config.get("DEFAULTS", "disc_server_port")
+        discovery_server = Config.get("DISCOVERY", "server")
+        discovery_port = Config.get("DISCOVERY", "port")
         sys.stderr.write("Updated discovery server: " + discovery_server + "\n")
         sys.stderr.write("Updated discovery port: " + str(discovery_port) + "\n")
         _disc= client.DiscoveryClient(discovery_server, discovery_port, module_name)
