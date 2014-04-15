@@ -49,3 +49,5 @@ refresh-static-assets:
 	cp -r static/dashboard/* debian/static/openstack-dashboard/
 	rm -f openstack_dashboard/local/local_settings.py
 
+
+override_dh_shlibdeps: 
