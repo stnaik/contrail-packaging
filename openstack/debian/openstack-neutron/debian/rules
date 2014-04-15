@@ -25,3 +25,5 @@ get-orig-source:
 	# Patch configuration file after testing
 #	patch -p1 < debian/patches/fix-quantum-configuration.patch
 #endif
+
+override_dh_shlibdeps: 
