@@ -16,7 +16,6 @@ export buildroot := $(SB_TOP)/build/debian/contrail-config
 export LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(SB_TOP)/build/debian/contrail-libs/usr/lib64/contrail
 
 export _bindir := /usr/bin
-export _contrailetc := /etc/contrail
 export _initddir := /etc/init.d
 export _venv_root := /opt/contrail/api-venv
 export _venvtr := --prefix=$(_venv_root)
