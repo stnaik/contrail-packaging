@@ -33,6 +33,7 @@ PACKAGES = \
 	contrail-setup-deb \
 	supervisord-deb \
 	contrail-openstack-deb \
+	contrail-openstack-ha-deb \
 	contrail-openstack-analytics-deb \
 	contrail-openstack-config-deb \
 	contrail-openstack-config-grizzly-deb \
