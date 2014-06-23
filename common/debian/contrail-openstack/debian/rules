@@ -36,7 +36,6 @@ override_dh_auto_install:
 	install -d -m 755 $(buildroot)/usr/bin
 	install -d -m 755 $(buildroot)$(_mysqllogdir)
 	install -p -m 755 $(SB_TOP)/tools/provisioning/contrail_setup_utils/contrail-keystone-setup.sh $(buildroot)/usr/bin/contrail-keystone-setup.sh
-	install -p -m 755 $(SB_TOP)/tools/provisioning/contrail_setup_utils/contrail-ha-keystone-setup.sh $(buildroot)/usr/bin/contrail-ha-keystone-setup.sh
 	
 override_dh_usrlocal:	
 
