@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Running Postinst for contrail-openstack-ha"
+sed -ibak "s#exit 0#/usr/bin/contrail-bootstrap-galera &\nexit 0#g" /etc/rc.local
+echo "Postinst for contrail-openstack-ha done"
