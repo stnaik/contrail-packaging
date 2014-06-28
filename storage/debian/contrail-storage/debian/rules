@@ -45,7 +45,7 @@ override_dh_auto_build:
 override_dh_auto_install:
 
 #	Install storage_nodemgr 
-	(cd $(_srcdir)/storage_stats-0.1dev; $(__python) setup.py install --root=$(buildroot) $(_venvtr))
+	(cd $(_srcdir)/storage_stats-0.1dev; cp ${TOP_TARGETS}/requirements.txt .; cp ${TOP_TARGETS}/test-requirements.txt .; $(__python) setup.py install --root=$(buildroot) $(_venvtr))
 	mkdir -p ${buildroot}/etc/init
 	install -p -m 644 $(_src_config)/storage-stats.upstart ${buildroot}/etc/init/storage-stats.conf
 
