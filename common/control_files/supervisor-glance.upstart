@@ -1,0 +1,20 @@
+description "Supervisord Glance services"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+script
+    supervisord --nodaemon -c /etc/contrail/supervisord_glance.conf || true
+    echo "supervisor-glance start failed. lsof -i :9012..."
+    lsof -i :9012 || true
+    pid=`lsof -Fp -i :9012 | cut -d'p' -f2` || true
+    if [ "x$pid" != "x" ]; then
+        ps uw -p $pid
+    fi
+end script
+
+pre-stop script
+    supervisorctl -s http://localhost:9012 stop all
+    supervisorctl -s http://localhost:9012 shutdown
+    /usr/bin/supervisor_killall /etc/contrail/supervisord_glance_files
+end script

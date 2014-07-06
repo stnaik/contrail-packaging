@@ -1,0 +1,25 @@
+description "Supervisord Keystone API server"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+#exec start-stop-daemon --start --chuid keystone \
+#            --chdir /var/lib/keystone --name keystone \
+#            --exec /usr/bin/keystone-all
+script
+    supervisord --nodaemon -c /etc/contrail/supervisord_keystone.conf || true
+    echo "supervisor-keystone start failed. lsof -i :9010..."
+    lsof -i :9010 || true
+    pid=`lsof -Fp -i :9010 | cut -d'p' -f2` || true
+    if [ "x$pid" != "x" ]; then
+        ps uw -p $pid
+    fi
+end script
+
+pre-stop script
+    supervisorctl -s http://localhost:9010 stop all
+    supervisorctl -s http://localhost:9010 shutdown
+    /usr/bin/supervisor_killall /etc/contrail/supervisord_keystone_files
+end script
