@@ -4,3 +4,21 @@ set -e
 echo "create the agent_param file..."
 /opt/contrail/bin/vnagent_param_setup.sh
 
+# switch to supervisord
+if [ -f /etc/redhat-release ]; then
+   nova_compute=openstack-nova-compute
+fi
+
+if [ -f /etc/lsb-release ] && egrep -q 'DISTRIB_ID.*Ubuntu' /etc/lsb-release; then
+   nova_compute=nova-compute
+fi
+
+for svc in $nova_compute; do
+    if [ -e /etc/init/$svc.conf ]; then
+        service $svc stop
+        mv /etc/init/$svc.conf /etc/init/$svc.conf.backup
+        mv /etc/init.d/$svc /etc/init.d/$svc.backup
+        cp /etc/init.d/$svc.initd.supervisord /etc/init.d/$svc
+    fi
+done
+
