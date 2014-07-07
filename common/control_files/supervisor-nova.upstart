@@ -12,7 +12,7 @@ pre-start script
         mkdir -p /var/lock/nova
         chown nova:root /var/lock/nova/
         if [ -e /etc/contrail/supervisord_nova_files/nova-compute.ini ]; then
-            modeprobe nbd
+            modprobe nbd
         fi
 end script
 
