@@ -31,7 +31,7 @@ fi
 
 for svc in $keystone $nova_api $nova_scheduler $nova_conductor $nova_console $nova_consoleauth $nova_objectstore $nova_novncproxy $glance_api $glance_registry $cinder_api $cinder_scheduler; do
     if [ -f /etc/init/$svc.conf ]; then
-        service $svc stop
+        service $svc stop || true
         mv /etc/init/$svc.conf /etc/init/$svc.conf.backup
         mv /etc/init.d/$svc /etc/init.d/$svc.backup
         cp /etc/init.d/$svc.initd.supervisord /etc/init.d/$svc
@@ -44,7 +44,7 @@ else
     rm /etc/init/supervisor-nova.conf.upstart_openstack
 fi
 if [ ! -f /etc/contrail/supervisord_nova.conf ]; then
-    mv /etc/contrail/supervisord_nova.conf.supervisord_openstack /etc/init/supervisord_nova.conf
+    mv /etc/contrail/supervisord_nova.conf.supervisord_openstack /etc/contrail/supervisord_nova.conf
 else
     rm /etc/contrail/supervisord_nova.conf.supervisord_openstack
 fi

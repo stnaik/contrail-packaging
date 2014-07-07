@@ -16,7 +16,7 @@ fi
 
 for svc in $nova_compute; do
     if [ -e /etc/init/$svc.conf ]; then
-        service $svc stop
+        service $svc stop || true
         mv /etc/init/$svc.conf /etc/init/$svc.conf.backup
         mv /etc/init.d/$svc /etc/init.d/$svc.backup
         cp /etc/init.d/$svc.initd.supervisord /etc/init.d/$svc
@@ -29,7 +29,7 @@ else
     rm /etc/init/supervisor-nova.conf.upstart_vrouter
 fi
 if [ ! -f /etc/contrail/supervisord_nova.conf ]; then
-    mv /etc/contrail/supervisord_nova.conf.supervisord_vrouter /etc/init/supervisord_nova.conf
+    mv /etc/contrail/supervisord_nova.conf.supervisord_vrouter /etc/contrail/supervisord_nova.conf
 else
     rm /etc/contrail/supervisord_nova.conf.supervisord_vrouter
 fi
