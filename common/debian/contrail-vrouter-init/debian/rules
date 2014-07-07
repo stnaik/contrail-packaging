@@ -53,9 +53,9 @@ override_dh_auto_install:
 	install -p -m 755 $(_confsrcdir)/agent.conf  ${buildroot}/etc/contrail/rpm_agent.conf
 	# Install supervisord nova config files and directories
 	install -d -m 755 ${buildroot}${_supervisornovaconf}
-	install -D -m 755 $(_confsrcdir)/supervisor-nova.upstart $(buildroot)/etc/init/supervisor-nova.conf
+	install -D -m 755 $(_confsrcdir)/supervisor-nova.upstart $(buildroot)/etc/init/supervisor-nova.conf.upstart_vrouter
 	install -p -m 755 $(_confsrcdir)/nova-compute.initd.supervisord $(buildroot)/etc/init.d/nova-compute.initd.supervisord
-	install -p -m 755 $(_confsrcdir)/supervisord_nova.conf $(buildroot)/etc/contrail/supervisord_nova.conf
+	install -p -m 755 $(_confsrcdir)/supervisord_nova.conf $(buildroot)/etc/contrail/supervisord_nova.conf.supervisord_vrouter
 	install -p -m 755 $(_confsrcdir)/nova-compute.ini $(buildroot)$(_supervisornovaconf)
 
 

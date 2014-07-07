@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "Running Postinst for contrail-vrouter-init"
 set -e
 
 echo "create the agent_param file..."
@@ -22,3 +23,14 @@ for svc in $nova_compute; do
     fi
 done
 
+if [ ! -f /etc/init/supervisor-nova.conf ]; then
+    mv /etc/init/supervisor-nova.conf.upstart_vrouter /etc/init/supervisor-nova.conf
+else
+    rm /etc/init/supervisor-nova.conf.upstart_vrouter
+fi
+if [ ! -f /etc/contrail/supervisord_nova.conf ]; then
+    mv /etc/contrail/supervisord_nova.conf.supervisord_vrouter /etc/init/supervisord_nova.conf
+else
+    rm /etc/contrail/supervisord_nova.conf.supervisord_vrouter
+fi
+echo "Postinst for contrail-vrouter-init done"
